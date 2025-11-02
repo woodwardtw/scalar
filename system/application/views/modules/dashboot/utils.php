@@ -143,6 +143,7 @@ $(document).ready(function() {
 			   <small>Best for using with the Scalar Import/Transfer tool</small><br /><br />
 			   <a class="btn btn-default export-link" href="<?=$rdf_url_xml?>" style="width:160px;">Export as RDF-XML</a> &nbsp; &nbsp;
 			   <small>Best for working with external Semantic Web applications</small><br /><br />
+				 You can also export and download all media files from the project.<br /><br />
 			   <a class="btn btn-default" href="<?=confirm_slash(base_url())?>system/dashboard?action=export_media_folder&book_id=<?=((isset($book) && !empty($book))?$book->book_id:'0')?>#tabs-utils" style="width:160px;">Export media folder</a> &nbsp; &nbsp;
 			   <small>Download all media files as a ZIP archive</small>
 			    </p>
