@@ -825,8 +825,73 @@ class System extends MY_Controller {
 					$this->data['normalize_predicate_table'] = array_keys($predicates);
 					unset($predicates);
 					break;
-		 	}
-	 	} catch (Exception $e) {
+				case "export_media_folder":  // Export media folder as zip
+					if (!$this->data['login']->is_logged_in) $this->kickout();
+					$book_id = (isset($_REQUEST['book_id']) && !empty($_REQUEST['book_id'])) ? (int) $_REQUEST['book_id'] : 0;
+					if (empty($book_id)) show_error('Invalid book ID');
+					$this->data['book'] = $this->books->get($book_id);
+					$this->set_user_book_perms();
+					if (!$this->login_is_book_admin()) show_error('Invalid permissions');
+					
+					// Get the media directory path
+					$media_path = FCPATH.$this->data['book']->slug.'/media/';
+					
+					// Check if media directory exists
+					if (!file_exists($media_path) || !is_dir($media_path)) {
+						show_error('Media folder not found for this book');
+					}
+					
+					// Create a temporary zip file
+					$this->load->library('zip');
+					$temp_file = tempnam(sys_get_temp_dir(), 'media_export_');
+					
+					// Read the media directory and add files to zip
+					$this->zip->read_dir($media_path, false);
+					
+					// Write the zip file to temporary location
+					$this->zip->archive($temp_file);
+					
+					// Check if zip file was created successfully
+					if (!file_exists($temp_file) || filesize($temp_file) == 0) {
+						// Clean up any partial file
+						if (file_exists($temp_file)) {
+							unlink($temp_file);
+						}
+						show_error('Failed to create ZIP file');
+					}
+					
+					// Set headers for download
+					$filename = $this->data['book']->slug.'_media.zip';
+					header('Content-Type: application/zip');
+					header('Content-Disposition: attachment; filename="'.$filename.'"');
+					header('Content-Length: ' . filesize($temp_file));
+					header('Connection: close');
+					
+					// Flush output buffers to prevent corruption
+					while (ob_get_level()) {
+						ob_end_clean();
+					}
+					
+					// Output the file in chunks to handle large files
+					$chunk_size = 1024 * 1024; // 1MB chunks
+					$handle = fopen($temp_file, 'rb');
+					if ($handle) {
+						while (!feof($handle)) {
+							echo fread($handle, $chunk_size);
+							flush();
+						}
+						fclose($handle);
+					}
+					
+					// Clean up temporary file
+					if (file_exists($temp_file)) {
+						unlink($temp_file);
+					}
+					
+					// Exit to prevent further output
+					exit;
+				}
+			} catch (Exception $e) {
 			show_error($e->getMessage());
 		}
 

@@ -139,15 +139,18 @@ $(document).ready(function() {
 			    explore the API more thoroughly head over to the API Explorer utlity.
 			</p>
 			<p>
-	       		<a class="btn btn-default export-link" href="<?=$rdf_url_json?>" style="width:160px;">Export as RDF-JSON</a> &nbsp; &nbsp;
-  				<small>Best for using with the Scalar Import/Transfer tool</small><br /><br />
-  				<a class="btn btn-default export-link" href="<?=$rdf_url_xml?>" style="width:160px;">Export as RDF-XML</a> &nbsp; &nbsp;
-  				<small>Best for working with external Semantic Web applications</small>
-	     	</p>
-	     	<p class="m" id="export-content">
-	     		<small>URL: <span id="export-content-url"></span></small>
-	     		<textarea id="export-content-text" class="form-control"></textarea>
-	     	</p>
+			     		<a class="btn btn-default export-link" href="<?=$rdf_url_json?>" style="width:160px;">Export as RDF-JSON</a> &nbsp; &nbsp;
+			   <small>Best for using with the Scalar Import/Transfer tool</small><br /><br />
+			   <a class="btn btn-default export-link" href="<?=$rdf_url_xml?>" style="width:160px;">Export as RDF-XML</a> &nbsp; &nbsp;
+			   <small>Best for working with external Semantic Web applications</small><br /><br />
+				 You can also export and download all media files from the project.<br /><br />
+			   <a class="btn btn-default" href="<?=confirm_slash(base_url())?>system/dashboard?action=export_media_folder&book_id=<?=((isset($book) && !empty($book))?$book->book_id:'0')?>#tabs-utils" style="width:160px;">Export media folder</a> &nbsp; &nbsp;
+			   <small>Download all media files as a ZIP archive</small>
+			    </p>
+			    <p class="m" id="export-content">
+			    	<small>URL: <span id="export-content-url"></span></small>
+			    	<textarea id="export-content-text" class="form-control"></textarea>
+			    </p>
 	    <?php endif; ?>
     	</div>
     	<div class="section" id="api-explorer">
