@@ -18,22 +18,22 @@ $pill = (isset($_GET['pill']) && !empty($_GET['pill'])) ? $_GET['pill'] : 'impor
 ?>
 
 <script>
-	$(document).ready(function () {
-		$('.nav-pills').find('li').on('click', function () {
-			var $this = $(this);
-			$this.closest('.nav').find('li').removeClass('active');
-			$this.addClass('active');
-			$this.closest('.row').find('.section').hide();
-			var $section = $this.closest('.row').find('#' + $this.data('id'));
-			$section.show();
-		});
-		if (-1 != document.location.href.indexOf('&pill=')) {
-			var pill = document.location.href.substr(document.location.href.indexOf('&pill=') + 6);
-			if (pill.indexOf('&') != -1) pill = pill.substr(0, pill.indexOf('&'));
-			if (pill.indexOf('#') != -1) pill = pill.substr(0, pill.indexOf('#'));
-			$('.nav-pills:first').find('[data-id="' + pill + '"]').trigger('click');
-		};
-		$('.export-link').on('click', function(e) {
+$(document).ready(function() {
+	$('.nav-pills').find('li').on('click', function() {
+		var $this = $(this);
+		$this.closest('.nav').find('li').removeClass('active');
+		$this.addClass('active');
+		$this.closest('.row').find('.section').hide();
+		var $section = $this.closest('.row').find('#'+$this.data('id'));
+		$section.show();
+	});
+	if (-1!=document.location.href.indexOf('&pill=')) {
+		var pill = document.location.href.substr(document.location.href.indexOf('&pill=')+6);
+		if (pill.indexOf('&')!=-1) pill = pill.substr(0, pill.indexOf('&'));
+		if (pill.indexOf('#')!=-1) pill = pill.substr(0, pill.indexOf('#'));
+		$('.nav-pills:first').find('[data-id="'+pill+'"]').trigger('click');
+	};
+	$('.export-link').on('click', function(e) {
 		e.preventDefault();
 		var url = $(this).attr('href');
 		var $content = $('#export-content').show();
@@ -42,7 +42,7 @@ $pill = (isset($_GET['pill']) && !empty($_GET['pill'])) ? $_GET['pill'] : 'impor
 			$content.find('textarea').val(data);
 		}, 'text');
 	});
-		$('.export-media-link').on('click', function(e) {
+	$('.export-media-link').on('click', function(e) {
 		e.preventDefault();
 		var url = $(this).attr('href');
 		var $content = $('#export-content').show();
@@ -50,41 +50,41 @@ $pill = (isset($_GET['pill']) && !empty($_GET['pill'])) ? $_GET['pill'] : 'impor
 		
 		window.location.href = url;
 	});
-		$('#do_delete_books_form').on('submit', function () {
-			if (!$(this).prev().find('input:checked').length) return false;
-			var msg = 'Are you sure you wish to delete the selected books';
-			if ($(this).find('[name="delete_creators"]').val() == 1) msg += ' and their creator user accounts';
-			if (!confirm(msg + '?')) return false;
-			var book_ids = [];
-			$(this).prev().find('input:checked').each(function () {
-				book_ids.push($(this).val());
-			});
-			$(this).find('[name="book_ids"]').val(book_ids.join(','));
-			return true;
+	$('#do_delete_books_form').on('submit', function() {
+		if (!$(this).prev().find('input:checked').length) return false;
+		var msg='Are you sure you wish to delete the selected books';
+		if ($(this).find('[name="delete_creators"]').val()==1) msg+=' and their creator user accounts';
+		if (!confirm(msg+'?')) return false;
+		var book_ids=[];
+		$(this).prev().find('input:checked').each(function() {
+			book_ids.push($(this).val());
 		});
-		$('#do_delete_users_form').on('submit', function () {
-			if (!$(this).prev().find('input:checked').length) return false;
-			var msg = 'Are you sure you wish to delete the selected users';
-			if ($(this).find('[name="delete_books"]').val() == 1) msg += ' and books they author';
-			msg += '?';
-			if ($(this).find('[name="delete_books"]').val() == 1) msg += ' This might include books with multiple authors.';
-			if (!confirm(msg)) return false;
-			var user_ids = [];
-			$(this).prev().find('input:checked').each(function () {
-				user_ids.push($(this).val());
-			});
-			$(this).find('[name="user_ids"]').val(user_ids.join(','));
-			return true;
-		});
-		$('.div_list').find('input[type="checkbox"]').on('change', function () {
-			var checked = $(this).is(':checked') ? true : false;
-			if (checked) {
-				$(this).closest('div').addClass('active');
-			} else {
-				$(this).closest('div').removeClass('active');
-			};
-		});
+		$(this).find('[name="book_ids"]').val(book_ids.join(','));
+		return true;
 	});
+	$('#do_delete_users_form').on('submit', function() {
+		if (!$(this).prev().find('input:checked').length) return false;
+		var msg='Are you sure you wish to delete the selected users';
+		if ($(this).find('[name="delete_books"]').val()==1) msg+=' and books they author';
+		msg += '?';
+		if ($(this).find('[name="delete_books"]').val()==1) msg+=' This might include books with multiple authors.';
+		if (!confirm(msg)) return false;
+		var user_ids=[];
+		$(this).prev().find('input:checked').each(function() {
+			user_ids.push($(this).val());
+		});
+		$(this).find('[name="user_ids"]').val(user_ids.join(','));
+		return true;
+	});
+	$('.div_list').find('input[type="checkbox"]').on('change', function() {
+		var checked = $(this).is(':checked') ? true : false;
+		if (checked) {
+			$(this).closest('div').addClass('active');
+		} else {
+			$(this).closest('div').removeClass('active');
+		};
+	});
+});
 </script>
 <div class="container-fluid properties">
 	<div class="row">
@@ -160,40 +160,32 @@ $pill = (isset($_GET['pill']) && !empty($_GET['pill'])) ? $_GET['pill'] : 'impor
 							?>
 				<?php endif; ?>
 			</div>
-			<div class="section" id="export">
-				<?php if ('export' == $pill): ?>
-					<?php
-					$rdf_url_json = confirm_slash(base_url()) . $book->slug . '/rdf/instancesof/content?format=json&rec=1&ref=1&';
-					$rdf_url_xml = confirm_slash(base_url()) . $book->slug . '/rdf/instancesof/content?&rec=1&ref=1';
-					?>
-					<h4>Export</h4>
-					<p class="m">
-						Use the buttons below to generate exports containing all pages and relationships in this work
-						(physical media
-						files are not included). This data can be used for backing up your book, for importing at a later
-						date, or for using the data in other ways. The export
-						process may take a minute or two depending on the amount of content in the project. For more
-						information see
-						the <a href="http://scalar.usc.edu/works/guide2/working-with-the-api">Working with the API</a> path
-						in the <a href="http://scalar.usc.edu/works/guide2">Scalar 2 Guide</a>, or to
-						explore the API more thoroughly head over to the API Explorer utlity.
-					</p>
-					<p>
-						<a class="btn btn-default export-link" href="<?= $rdf_url_json ?>" style="width:160px;">Export as
-							RDF-JSON</a> &nbsp; &nbsp;
-						<small>Best for using with the Scalar Import/Transfer tool</small><br /><br />
-						<a class="btn btn-default export-link" href="<?= $rdf_url_xml ?>" style="width:160px;">Export as
-							RDF-XML</a> &nbsp; &nbsp;
-						<small>Best for working with external Semantic Web applications</small><br /><br />
-						You can also export and download all media files from the project.<br /><br />
-						<a class="btn btn-default export-media-link"
-							href="<?= confirm_slash(base_url()) ?>system/dashboard?action=export_media_folder&book_id=<?= ((isset($book) && !empty($book)) ? $book->book_id : '0') ?>#tabs-utils"
-							style="width:160px;">Export media folder</a> &nbsp; &nbsp;
-						<small>Download all media files as a ZIP archive</small>
-					</p>
-					    <p class="m" id="export-content"></p>
-				<?php endif; ?>
-			</div>
+    	<div class="section" id="export">
+    	<?php if ('export'==$pill): ?>
+    		<?php
+    			$rdf_url_json = confirm_slash(base_url()).$book->slug.'/rdf/instancesof/content?format=json&rec=1&ref=1&';
+    			$rdf_url_xml = confirm_slash(base_url()).$book->slug.'/rdf/instancesof/content?&rec=1&ref=1';
+    		?>
+    		<h4>Export</h4>
+	        <p class="m">
+	        	Use the buttons below to generate exports containing all pages and relationships in this work (physical media
+				files are not included). This data can be used for backing up your book, for importing at a later date, or for using the data in other ways. The export
+			    process may take a minute or two depending on the amount of content in the project. For more information see
+			    the <a href="http://scalar.usc.edu/works/guide2/working-with-the-api">Working with the API</a> path in the <a href="http://scalar.usc.edu/works/guide2">Scalar 2 Guide</a>, or to
+			    explore the API more thoroughly head over to the API Explorer utlity.
+			</p>
+			<p>
+			 	     	<a class="btn btn-default export-link" href="<?=$rdf_url_json?>" style="width:160px;">Export as RDF-JSON</a> &nbsp; &nbsp;
+			   <small>Best for using with the Scalar Import/Transfer tool</small><br /><br />
+			   <a class="btn btn-default export-link" href="<?=$rdf_url_xml?>" style="width:160px;">Export as RDF-XML</a> &nbsp; &nbsp;
+			   <small>Best for working with external Semantic Web applications</small><br /><br />
+				 You can also export and download all media files from the project.<br /><br />
+			   <a class="btn btn-default export-media-link" href="<?=confirm_slash(base_url())?>system/dashboard?action=export_media_folder&book_id=<?=((isset($book) && !empty($book))?$book->book_id:'0')?>#tabs-utils" style="width:160px;">Export media folder</a> &nbsp; &nbsp;
+			   <small>Download all media files as a ZIP archive</small>
+			    </p>
+			    <p class="m" id="export-content"></p>
+	    <?php endif; ?>
+    	</div>
 			<div class="section" id="api-explorer">
 				<?php if ('api-explorer' == $pill): ?>
 					<h4>API Explorer</h4>
