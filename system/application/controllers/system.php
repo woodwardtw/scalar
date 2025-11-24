@@ -841,54 +841,29 @@ class System extends MY_Controller {
 						show_error('Media folder not found for this book');
 					}
 					
-					// Create a temporary zip file
-					$this->load->library('zip');
-					$temp_file = tempnam(sys_get_temp_dir(), 'media_export_');
-					
-					// Read the media directory and add files to zip
-					$this->zip->read_dir($media_path, false);
-					
-					// Write the zip file to temporary location
-					$this->zip->archive($temp_file);
-					
-					// Check if zip file was created successfully
-					if (!file_exists($temp_file) || filesize($temp_file) == 0) {
-						// Clean up any partial file
-						if (file_exists($temp_file)) {
-							unlink($temp_file);
-						}
-						show_error('Failed to create ZIP file');
-					}
-					
 					// Set headers for download
 					$filename = $this->data['book']->slug.'_media.zip';
 					header('Content-Type: application/zip');
 					header('Content-Disposition: attachment; filename="'.$filename.'"');
-					header('Content-Length: ' . filesize($temp_file));
-					header('Connection: close');
+					header('Content-Transfer-Encoding: binary');
 					
 					// Flush output buffers to prevent corruption
 					while (ob_get_level()) {
 						ob_end_clean();
 					}
 					
-					// Output the file in chunks to handle large files
-					$chunk_size = 1024 * 1024; // 1MB chunks
-					$handle = fopen($temp_file, 'rb');
-					if ($handle) {
-						while (!feof($handle)) {
-							echo fread($handle, $chunk_size);
+					// Stream the zip file directly to the client
+					$command = 'cd ' . escapeshellarg($media_path) . ' && zip -r - .';
+					$fp = popen($command, 'r');
+					
+					if ($fp) {
+						while (!feof($fp)) {
+							echo fread($fp, 8192);
 							flush();
 						}
-						fclose($handle);
+						pclose($fp);
 					}
 					
-					// Clean up temporary file
-					if (file_exists($temp_file)) {
-						unlink($temp_file);
-					}
-					
-					// Exit to prevent further output
 					exit;
 				}
 			} catch (Exception $e) {
