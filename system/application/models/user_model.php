@@ -190,7 +190,8 @@ class User_model extends MY_Model {
         if( $set_referrals !== null )
             ldap_set_option($ldapCon, LDAP_OPT_REFERRALS, (int) $set_referrals );
 
-        if ( !ldap_start_tls($ldapCon) ) {
+		// attempt to start TLS only if we're not using LDAPS
+        if ( strpos( $ldap_host, 'ldaps://' ) !== 0 && ! ldap_start_tls($ldapCon) ) {
             throw new Exception('Unable to start TLS on LDAP connection');
         }
 
@@ -798,4 +799,5 @@ class User_model extends MY_Model {
 
 }
 ?>
+
 
