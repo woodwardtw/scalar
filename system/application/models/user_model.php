@@ -781,8 +781,12 @@ class User_model extends MY_Model {
     	
     	$this->load->model('resource_model', 'resources');
     	$json = $this->resources->get('disallowed_emails');
-    	$arr = json_decode($json, true);
-    	if (empty($arr)) $arr = array();
+		// Ensure we're not passing null to json_decode
+    	if ( ! empty( $json ) ) {
+			$arr = json_decode( $json, true );
+		} else {
+			$arr = array();
+		}
     	if (in_array($email, $arr)) return true;
     	return false;
     	
@@ -790,3 +794,4 @@ class User_model extends MY_Model {
 
 }
 ?>
+
